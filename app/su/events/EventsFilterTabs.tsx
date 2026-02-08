@@ -137,10 +137,10 @@ export function EventsFilterTabs({ events, agendas }: EventsFilterTabsProps) {
                     </span>
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-500">
-                    {format(new Date(event.createdAt), "yyyy-MM-dd HH:mm:ss")}
+                    {format(new Date(event.createdAt), "yyyy-MM-dd hh:mm:ss a")}
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-500">
-                    {format(new Date(event.updatedAt), "yyyy-MM-dd HH:mm:ss")}
+                    {format(new Date(event.updatedAt), "yyyy-MM-dd hh:mm:ss a")}
                   </td>
                 </tr>
               ))}

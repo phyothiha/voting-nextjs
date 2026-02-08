@@ -16,8 +16,8 @@ export function generateSessionToken(): string {
   return randomBytes(32).toString('hex');
 }
 
-// Generate a random username in the format "user###" where ### is between 100-999
-export function generateUsername(): string {
+// Generate a random player number in the format "###" where ### is between 100-249
+export function generatePlayerNumber(): string {
   // const number = Math.floor(Math.random() * 900) + 100;
   const number = Math.floor(Math.random() * 150) + 100; // 100-249 (150 possibilities)
   

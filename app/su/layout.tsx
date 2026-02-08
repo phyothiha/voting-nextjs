@@ -33,6 +33,12 @@ export default function SULayout({ children }: { children: ReactNode }) {
               >
                 Events
               </Link>
+              <Link
+                href="/su/gift-exchange"
+                className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer"
+              >
+                Gift Exchange
+              </Link>
             </div>
           </div>
         </div>

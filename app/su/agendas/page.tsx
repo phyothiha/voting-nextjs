@@ -95,10 +95,10 @@ export default async function AgendasPage() {
                         {agenda.events.length}
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-500">
-                        {format(new Date(agenda.createdAt), 'yyyy-MM-dd HH:mm:ss')}
+                        {format(new Date(agenda.createdAt), 'yyyy-MM-dd hh:mm:ss a')}
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-500">
-                        {format(new Date(agenda.updatedAt), 'yyyy-MM-dd HH:mm:ss')}
+                        {format(new Date(agenda.updatedAt), 'yyyy-MM-dd hh:mm:ss a')}
                       </td>
                       {/* <td className="py-3 px-4 text-sm">
                         <div className="flex gap-3">

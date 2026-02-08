@@ -14,9 +14,23 @@ export default async function UsersPage({
   const users = await prisma.user.findMany({
     where: search
       ? {
-          username: {
-            contains: search,
-          },
+          OR: [
+            {
+              name: {
+                contains: search,
+              },
+            },
+            {
+              playerNumber: {
+                contains: search,
+              },
+            },
+            {
+              department: {
+                contains: search,
+              },
+            },
+          ],
         }
       : undefined,
     include: {
@@ -53,7 +67,7 @@ export default async function UsersPage({
                   type="text"
                   name="search"
                   defaultValue={search || ""}
-                  placeholder="Search by username..."
+                  placeholder="Search by name, player number, or department..."
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-gray-500 focus:border-gray-500 outline-none"
                 />
                 <button
@@ -100,7 +114,13 @@ export default async function UsersPage({
                       ID
                     </th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                      Username
+                      Player #
+                    </th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                      Name
+                    </th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                      Department
                     </th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
                       Session Token
@@ -125,17 +145,23 @@ export default async function UsersPage({
                       <td className="py-3 px-4 text-sm text-gray-600">
                         {user.id}
                       </td>
+                      <td className="py-3 px-4 text-sm font-bold text-purple-600">
+                        #{user.playerNumber}
+                      </td>
                       <td className="py-3 px-4 text-sm font-medium text-gray-800">
-                        {user.username}
+                        {user.name}
+                      </td>
+                      <td className="py-3 px-4 text-sm text-gray-600">
+                        {user.department || '-'}
                       </td>
                       <td className="py-3 px-4 text-xs text-gray-500 font-mono">
                         {user.sessionToken.substring(0, 20)}...
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-500">
-                        {format(new Date(user.createdAt), "yyyy-MM-dd HH:mm:ss")}
+                        {format(new Date(user.createdAt), "yyyy-MM-dd hh:mm:ss a")}
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-500">
-                        {format(new Date(user.updatedAt), "yyyy-MM-dd HH:mm:ss")}
+                        {format(new Date(user.updatedAt), "yyyy-MM-dd hh:mm:ss a")}
                       </td>
                       <td className="py-3 px-4 text-sm">
                         <Link

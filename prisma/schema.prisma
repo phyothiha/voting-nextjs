@@ -11,12 +11,16 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  username     String   @unique
-  sessionToken String   @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  votes        Vote[]
+  id                     Int            @id @default(autoincrement())
+  playerNumber           String         @unique
+  name                   String
+  department             String?
+  sessionToken           String         @unique
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  votes                  Vote[]
+  giftExchangeAsGiver    GiftExchange?  @relation("GiftGiver")
+  giftExchangeAsReceiver GiftExchange[] @relation("GiftReceiver")
 }
 
 model Agenda {
@@ -56,4 +60,18 @@ model Vote {
   @@unique([userId, agendaId])
   @@index([eventId])
   @@index([userId])
+}
+
+model GiftExchange {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique
+  user         User     @relation("GiftGiver", fields: [userId], references: [id], onDelete: Cascade)
+  targetUserId Int?
+  targetUser   User?    @relation("GiftReceiver", fields: [targetUserId], references: [id], onDelete: SetNull)
+  status       String   // "searching" or "completed"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status])
+  @@index([targetUserId])
 }

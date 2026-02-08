@@ -20,7 +20,9 @@ export default async function UserVotesPage({
     where: { id: userId },
     select: {
       id: true,
-      username: true,
+      playerNumber: true,
+      name: true,
+      department: true,
       createdAt: true,
     },
   });
@@ -66,10 +68,10 @@ export default async function UserVotesPage({
               ← Back to Users
             </Link>
             <h1 className="text-2xl font-bold text-gray-800">
-              Vote History for {user.username}
+              Vote History for {user.name} (Player #{user.playerNumber})
             </h1>
             <p className="text-sm text-gray-600 mt-1">
-              User ID: {user.id} • Member since: {format(new Date(user.createdAt), "yyyy-MM-dd HH:mm:ss")}
+              User ID: {user.id} • {user.department && `Department: ${user.department} • `}Member since: {format(new Date(user.createdAt), "yyyy-MM-dd hh:mm:ss a")}
             </p>
           </div>
 
@@ -167,7 +169,7 @@ export default async function UserVotesPage({
                         </div>
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-500">
-                        {format(new Date(vote.createdAt), "yyyy-MM-dd HH:mm:ss")}
+                        {format(new Date(vote.createdAt), "yyyy-MM-dd hh:mm:ss a")}
                       </td>
                     </tr>
                   ))}
