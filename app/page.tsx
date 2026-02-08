@@ -1,12 +1,29 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
+
+type Event = {
+  id: number;
+  name: string;
+  description: string | null;
+  sortOrder: number;
+};
+
+type Agenda = {
+  id: number;
+  name: string;
+  description: string | null;
+  sortOrder: number;
+  events: Event[];
+};
 
 export default function Home() {
   const [username, setUsername] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [agendas, setAgendas] = useState<Agenda[]>([]);
+  const [selectedEvents, setSelectedEvents] = useState<Record<number, number>>({});
+  const [submittingAgendas, setSubmittingAgendas] = useState<Record<number, boolean>>({});
 
   // Check for existing session on mount
   useEffect(() => {
@@ -25,6 +42,23 @@ export default function Home() {
     checkSession();
   }, []);
 
+  // Fetch agendas and events when user is logged in
+  useEffect(() => {
+    if (username) {
+      const fetchAgendas = async () => {
+        try {
+          const response = await fetch('/api/agendas');
+          const data = await response.json();
+          setAgendas(data);
+        } catch (error) {
+          console.error('Error fetching agendas:', error);
+        }
+      };
+
+      fetchAgendas();
+    }
+  }, [username]);
+
   // Generate a new username
   const handleGenerateUsername = async () => {
     setGenerating(true);
@@ -41,79 +75,214 @@ export default function Home() {
     }
   };
 
+  // Handle radio button change
+  const handleEventSelect = (agendaId: number, eventId: number) => {
+    setSelectedEvents(prev => ({
+      ...prev,
+      [agendaId]: eventId
+    }));
+  };
+
+  // Handle vote submission for individual agenda
+  const handleAgendaVoteSubmit = async (agendaId: number) => {
+    if (!selectedEvents[agendaId]) {
+      alert('Please select an event to vote for');
+      return;
+    }
+
+    setSubmittingAgendas(prev => ({ ...prev, [agendaId]: true }));
+    try {
+      // TODO: Implement vote submission API
+      console.log(`Vote for agenda ${agendaId}:`, selectedEvents[agendaId]);
+      alert('Vote submitted successfully!');
+    } catch (error) {
+      console.error('Error submitting vote:', error);
+      alert('Failed to submit vote');
+    } finally {
+      setSubmittingAgendas(prev => ({ ...prev, [agendaId]: false }));
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
+      {/* Mobile-first header */}
+      <header className="sticky top-0 z-50 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 shadow-sm">
+        <div className="px-4 py-4">
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
             Voting App
           </h1>
-          
+        </div>
+      </header>
+
+      {/* Main content */}
+      <main className="px-4 py-6 pb-20">
+        <div className="max-w-2xl mx-auto">
           {loading ? (
-            <p className="text-lg text-zinc-600 dark:text-zinc-400">
-              Loading...
-            </p>
-          ) : username ? (
-            <div className="flex flex-col gap-4">
-              <p className="text-lg text-zinc-600 dark:text-zinc-400">
-                Welcome back!
-              </p>
-              <div className="rounded-lg bg-zinc-100 dark:bg-zinc-900 px-6 py-4">
-                <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                  Your username
-                </p>
-                <p className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-                  {username}
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-zinc-900 dark:border-zinc-50 border-r-transparent"></div>
+                <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-400">
+                  Loading...
                 </p>
               </div>
             </div>
+          ) : username ? (
+            <div className="space-y-6">
+              {/* Welcome Card */}
+              <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800">
+                <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-4">
+                  Welcome!
+                </p>
+                <div className="bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-xl p-6 border border-blue-100 dark:border-blue-900">
+                  <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-2">
+                    သင့်နံပါတ်
+                  </p>
+                  <p className="text-3xl font-bold text-zinc-900 dark:text-zinc-50 break-all">
+                    {username}
+                  </p>
+                </div>
+              </div>
+
+              {/* Voting Form */}
+              {agendas.length > 0 ? (
+                <div className="space-y-6">
+                  {/* Agendas with Events */}
+                  {agendas.map((agenda) => (
+                    <div
+                      key={agenda.id}
+                      className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800"
+                    >
+                      <div className="mb-4">
+                        <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-2 whitespace-pre-line">
+                          {agenda.name}
+                        </h2>
+                        {agenda.description && (
+                          <p className="text-sm text-zinc-600 dark:text-zinc-400 whitespace-pre-line">
+                            {agenda.description}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Events List */}
+                      {agenda.events.length > 0 ? (
+                        <div className="space-y-3 mb-4">
+                          {agenda.events.map((event) => (
+                            <label
+                              key={event.id}
+                              className={`flex items-start gap-3 p-4 rounded-xl border-2 transition-all cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 ${
+                                selectedEvents[agenda.id] === event.id
+                                  ? 'border-zinc-900 dark:border-zinc-50 bg-zinc-50 dark:bg-zinc-800/50'
+                                  : 'border-zinc-200 dark:border-zinc-800'
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name={`agenda-${agenda.id}`}
+                                value={event.id}
+                                checked={selectedEvents[agenda.id] === event.id}
+                                onChange={() => handleEventSelect(agenda.id, event.id)}
+                                className="mt-1 w-5 h-5 text-zinc-900 dark:text-zinc-50 cursor-pointer"
+                              />
+                              <div className="flex-1">
+                                <p className="font-medium text-zinc-900 dark:text-zinc-50 whitespace-pre-line">
+                                  {event.name}
+                                </p>
+                                {event.description && (
+                                  <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1 whitespace-pre-line">
+                                    {event.description}
+                                  </p>
+                                )}
+                              </div>
+                            </label>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400 italic mb-4">
+                          No events available for this agenda
+                        </p>
+                      )}
+
+                      {/* Submit Button for this agenda */}
+                      <button
+                        type="button"
+                        onClick={() => handleAgendaVoteSubmit(agenda.id)}
+                        disabled={submittingAgendas[agenda.id] || !selectedEvents[agenda.id]}
+                        className="w-full bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 rounded-xl py-3 px-6 font-semibold active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+                      >
+                        {submittingAgendas[agenda.id] ? (
+                          <span className="flex items-center justify-center gap-3">
+                            <span className="inline-block h-5 w-5 animate-spin rounded-full border-3 border-solid border-current border-r-transparent"></span>
+                            Submitting...
+                          </span>
+                        ) : (
+                          'Submit Vote'
+                        )}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800 text-center">
+                  <p className="text-zinc-600 dark:text-zinc-400">
+                    No agendas available at the moment
+                  </p>
+                </div>
+              )}
+            </div>
           ) : (
-            <div className="flex flex-col gap-4">
-              <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-                Get started by generating a random username. Your username will persist across browser tabs.
-              </p>
-              <button
-                onClick={handleGenerateUsername}
-                disabled={generating}
-                className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
-              >
-                {generating ? 'Generating...' : 'Generate Username'}
-              </button>
+            <div className="space-y-6">
+              {/* Getting Started Card */}
+              <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-zinc-200 dark:border-zinc-800">
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full mb-4">
+                    <svg className="w-8 h-8 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mb-3">
+                    Get Started
+                  </h2>
+                  <p className="text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+                    Generate a random username to start participating in votes. Your username will persist across browser tabs.
+                  </p>
+                </div>
+                
+                <button
+                  onClick={handleGenerateUsername}
+                  disabled={generating}
+                  className="w-full bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 rounded-xl py-4 px-6 font-semibold text-lg active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+                >
+                  {generating ? (
+                    <span className="flex items-center justify-center gap-3">
+                      <span className="inline-block h-5 w-5 animate-spin rounded-full border-3 border-solid border-current border-r-transparent"></span>
+                      Generating...
+                    </span>
+                  ) : (
+                    'Generate Username'
+                  )}
+                </button>
+              </div>
+
+              {/* Info Card */}
+              <div className="bg-blue-50 dark:bg-blue-950/30 rounded-2xl p-6 border border-blue-100 dark:border-blue-900">
+                <div className="flex gap-3">
+                  <div className="shrink-0">
+                    <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                      Anonymous Voting
+                    </h3>
+                    <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed">
+                      Your random username ensures privacy while allowing you to participate in voting events.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
         </div>
       </main>
     </div>
