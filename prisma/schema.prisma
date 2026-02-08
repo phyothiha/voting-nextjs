@@ -16,6 +16,7 @@ model User {
   sessionToken String   @unique
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  votes        Vote[]
 }
 
 model Agenda {
@@ -26,6 +27,7 @@ model Agenda {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   events      Event[]
+  votes       Vote[]
 }
 
 model Event {
@@ -37,4 +39,21 @@ model Event {
   agenda      Agenda   @relation(fields: [agendaId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  votes       Vote[]
+}
+
+model Vote {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventId   Int
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  agendaId  Int
+  agenda    Agenda   @relation(fields: [agendaId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, agendaId])
+  @@index([eventId])
+  @@index([userId])
 }

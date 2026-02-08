@@ -26,15 +26,19 @@ export default async function AgendasPage() {
     },
   });
 
+  const totalCount = agendas.length;
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">Agendas</h1>
+            <h1 className="text-2xl font-bold text-gray-800">
+              Agendas <span className="text-lg font-normal text-gray-600">({totalCount} total)</span>
+            </h1>
             <Link
               href="/su/agendas/new"
-              className="bg-gray-700 text-white py-2 px-6 rounded-md hover:bg-gray-800 transition-colors font-medium"
+              className="bg-gray-700 text-white py-2 px-6 rounded-md hover:bg-gray-800 transition-colors font-medium cursor-pointer"
             >
               Create New Agenda
             </Link>
@@ -67,9 +71,9 @@ export default async function AgendasPage() {
                     <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
                       Updated At
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                    {/* <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
                       Actions
-                    </th>
+                    </th> */}
                   </tr>
                 </thead>
                 <tbody>

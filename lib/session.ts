@@ -18,8 +18,8 @@ export function generateSessionToken(): string {
 
 // Generate a random username in the format "user###" where ### is between 100-999
 export function generateUsername(): string {
-  // Generate a random number between 100 and 999 (inclusive)
-  const number = Math.floor(Math.random() * 900) + 100;
+  // const number = Math.floor(Math.random() * 900) + 100;
+  const number = Math.floor(Math.random() * 150) + 100; // 100-249 (150 possibilities)
   
-  return `user${number}`;
+  return `${number}`;
 }

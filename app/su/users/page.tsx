@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { format } from "date-fns";
+import Link from "next/link";
 
 export default async function UsersPage({
   searchParams,
@@ -18,6 +19,11 @@ export default async function UsersPage({
           },
         }
       : undefined,
+    include: {
+      _count: {
+        select: { votes: true }
+      }
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -26,15 +32,15 @@ export default async function UsersPage({
 
   return (
     <div className="py-8 px-4">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-2xl font-bold text-gray-800">
-                Users (Latest 20)
+                Users <span className="text-lg font-normal text-gray-600">({totalCount} total)</span>
               </h1>
               <p className="text-sm text-gray-600 mt-1">
-                Total users in database: {totalCount}
+                Showing latest 20 records. Use search to find more records.
               </p>
             </div>
           </div>
@@ -52,14 +58,14 @@ export default async function UsersPage({
                 />
                 <button
                   type="submit"
-                  className="bg-gray-700 text-white py-2 px-6 rounded-md hover:bg-gray-800 transition-colors font-medium"
+                  className="bg-gray-700 text-white py-2 px-6 rounded-md hover:bg-gray-800 transition-colors font-medium cursor-pointer"
                 >
                   Search
                 </button>
                 {search && (
                   <a
                     href="/su/users"
-                    className="bg-gray-200 text-gray-700 py-2 px-6 rounded-md hover:bg-gray-300 transition-colors font-medium"
+                    className="bg-gray-200 text-gray-700 py-2 px-6 rounded-md hover:bg-gray-300 transition-colors font-medium cursor-pointer"
                   >
                     Clear
                   </a>
@@ -105,6 +111,9 @@ export default async function UsersPage({
                     <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
                       Updated At
                     </th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                      Vote History
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -119,7 +128,7 @@ export default async function UsersPage({
                       <td className="py-3 px-4 text-sm font-medium text-gray-800">
                         {user.username}
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-500 font-mono text-xs">
+                      <td className="py-3 px-4 text-xs text-gray-500 font-mono">
                         {user.sessionToken.substring(0, 20)}...
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-500">
@@ -127,6 +136,14 @@ export default async function UsersPage({
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-500">
                         {format(new Date(user.updatedAt), "yyyy-MM-dd HH:mm:ss")}
+                      </td>
+                      <td className="py-3 px-4 text-sm">
+                        <Link
+                          href={`/su/users/${user.id}/votes`}
+                          className="text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                          View History ({user._count.votes})
+                        </Link>
                       </td>
                     </tr>
                   ))}

@@ -6,7 +6,13 @@ export async function GET() {
   try {
     const agendas = await prisma.agenda.findMany({
       include: {
-        events: true, // Include related events
+        events: {
+          include: {
+            _count: {
+              select: { votes: true }
+            }
+          }
+        }
       },
       orderBy: { createdAt: 'asc' },
     })
