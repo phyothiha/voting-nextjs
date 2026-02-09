@@ -10,6 +10,12 @@ const prisma = new PrismaClient({ adapter })
 async function main() {
   console.log('Start seeding...')
 
+  // Clear existing data
+  await prisma.event.deleteMany({})
+  await prisma.agenda.deleteMany({})
+  
+  console.log('Cleared existing data')
+
   // Create Agenda 1
   const agenda1 = await prisma.agenda.create({
     data: {
