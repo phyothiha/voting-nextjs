@@ -6,6 +6,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { EventsFilterTabs } from "@/app/su/events/EventsFilterTabs";
 
+export const dynamic = 'force-dynamic';
+
 async function deleteEvent(id: number) {
   "use server";
   

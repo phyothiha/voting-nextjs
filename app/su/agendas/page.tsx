@@ -5,6 +5,8 @@ import { DeleteAgendaButton } from "./DeleteAgendaButton";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+export const dynamic = 'force-dynamic';
+
 async function deleteAgenda(id: number) {
   "use server";
   

@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 
+export const dynamic = 'force-dynamic';
+
 async function updateEvent(id: number, formData: FormData) {
   "use server";
 
