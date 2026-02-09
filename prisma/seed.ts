@@ -112,6 +112,15 @@ async function main() {
     },
   })
 
+  // Reset sequences to avoid unique constraint errors
+  // This is necessary because we manually set IDs in the seed data
+  await prisma.$executeRawUnsafe(`
+    SELECT setval(pg_get_serial_sequence('"Agenda"', 'id'), COALESCE(MAX(id), 1)) FROM "Agenda";
+  `)
+  await prisma.$executeRawUnsafe(`
+    SELECT setval(pg_get_serial_sequence('"Event"', 'id'), COALESCE(MAX(id), 1)) FROM "Event";
+  `)
+
   console.log('Seeding finished.')
 }
 
