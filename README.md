@@ -1,36 +1,189 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Voting Next.js Application
 
-## Getting Started
+A Next.js voting application with PostgreSQL database using Prisma ORM.
 
-First, run the development server:
+## Prerequisites
+
+- Node.js 20+ 
+- Docker and Docker Compose (for local PostgreSQL)
+- npm or yarn
+
+## Local Development Setup
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Start PostgreSQL with Docker
+
+```bash
+docker-compose up -d
+```
+
+This will start a PostgreSQL database on `localhost:5432` with:
+- Username: `postgres`
+- Password: `postgres`
+- Database: `voting_db`
+
+### 3. Set Up Environment Variables
+
+Create a `.env` file (or copy from `.env.example`):
+
+```bash
+cp .env.example .env
+```
+
+The default `.env` file is already configured for the Docker PostgreSQL instance:
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/voting_db"
+```
+
+### 4. Run Database Migrations
+
+```bash
+npx prisma migrate dev
+```
+
+This will create all the necessary database tables.
+
+### 5. Generate Prisma Client
+
+```bash
+npx prisma generate
+```
+
+### 6. Seed the Database (Optional)
+
+```bash
+npm run seed
+```
+
+### 7. Start Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will be available at `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Available Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm start` - Start production server
+- `npm run seed` - Seed the database with initial data
+- `npx prisma studio` - Open Prisma Studio (visual database editor)
+- `npx prisma migrate dev` - Create and apply new migration
+- `docker-compose up -d` - Start PostgreSQL in background
+- `docker-compose down` - Stop PostgreSQL
+- `docker-compose logs -f postgres` - View PostgreSQL logs
 
-## Learn More
+## Database Management
 
-To learn more about Next.js, take a look at the following resources:
+### View Database with Prisma Studio
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npx prisma studio
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This opens a visual interface at `http://localhost:5555` where you can view and edit your database.
 
-## Deploy on Vercel
+### Create a New Migration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+After modifying `prisma/schema.prisma`:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npx prisma migrate dev --name your_migration_name
+```
+
+### Reset Database
+
+**Warning: This deletes all data!**
+
+```bash
+npx prisma migrate reset
+```
+
+## Deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions for Vercel, Netlify, and AWS.
+
+## Tech Stack
+
+- **Framework**: Next.js 16
+- **Database**: PostgreSQL 16
+- **ORM**: Prisma 7
+- **Styling**: Tailwind CSS 4
+- **Language**: TypeScript 5
+
+## Project Structure
+
+```
+voting-nextjs/
+├── app/                    # Next.js app directory
+│   ├── api/               # API routes
+│   └── su/                # Admin pages
+├── lib/                   # Utility libraries
+│   ├── prisma.ts         # Prisma client configuration
+│   └── session.ts        # Session management
+├── prisma/
+│   ├── schema.prisma     # Database schema
+│   ├── migrations/       # Migration files
+│   └── seed.ts           # Database seeding script
+├── prisma.config.ts      # Prisma configuration
+├── docker-compose.yml    # PostgreSQL Docker setup
+└── .env                  # Environment variables
+```
+
+## Troubleshooting
+
+### PostgreSQL Connection Issues
+
+If you can't connect to PostgreSQL:
+
+1. Check if Docker container is running:
+   ```bash
+   docker-compose ps
+   ```
+
+2. Check PostgreSQL logs:
+   ```bash
+   docker-compose logs postgres
+   ```
+
+3. Restart PostgreSQL:
+   ```bash
+   docker-compose restart postgres
+   ```
+
+### Port Already in Use
+
+If port 5432 is already in use, edit `docker-compose.yml` and change the port:
+
+```yaml
+ports:
+  - "5433:5432"  # Use 5433 on host machine
+```
+
+Then update your `.env` file:
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5433/voting_db"
+```
+
+### Migration Issues
+
+If migrations fail, you can reset the database:
+
+```bash
+docker-compose down -v  # Remove volumes
+docker-compose up -d    # Start fresh
+npx prisma migrate dev  # Apply migrations
+```
+
+## License
+
+MIT
