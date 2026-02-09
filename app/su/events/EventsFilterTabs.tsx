@@ -88,9 +88,6 @@ export function EventsFilterTabs({ events, agendas }: EventsFilterTabsProps) {
                   ID
                 </th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                  Sort Order
-                </th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
                   Name
                 </th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
@@ -101,6 +98,9 @@ export function EventsFilterTabs({ events, agendas }: EventsFilterTabsProps) {
                 </th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
                   Vote Count
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  Sort Order
                 </th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
                   Created At
@@ -119,9 +119,6 @@ export function EventsFilterTabs({ events, agendas }: EventsFilterTabsProps) {
                   <td className="py-3 px-4 text-sm text-gray-600">
                     {event.id}
                   </td>
-                  <td className="py-3 px-4 text-sm text-gray-600">
-                    {event.sortOrder}
-                  </td>
                   <td className="py-3 px-4 text-sm font-medium text-gray-800 whitespace-pre-line">
                     {event.name}
                   </td>
@@ -135,6 +132,9 @@ export function EventsFilterTabs({ events, agendas }: EventsFilterTabsProps) {
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                       {event._count.votes}
                     </span>
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-600">
+                    {event.sortOrder}
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-500">
                     {format(new Date(event.createdAt), "yyyy-MM-dd hh:mm:ss a")}

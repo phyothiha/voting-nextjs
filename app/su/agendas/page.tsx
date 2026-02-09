@@ -57,13 +57,13 @@ export default async function AgendasPage() {
                       ID
                     </th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
-                      Sort Order
-                    </th>
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
                       Name
                     </th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
                       Events Count
+                    </th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                      Sort Order
                     </th>
                     <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
                       Created At
@@ -85,14 +85,14 @@ export default async function AgendasPage() {
                       <td className="py-3 px-4 text-sm text-gray-600">
                         {agenda.id}
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-600">
-                        {agenda.sortOrder}
-                      </td>
                       <td className="py-3 px-4 text-sm font-medium text-gray-800 whitespace-pre-line">
                         {agenda.name}
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-600">
                         {agenda.events.length}
+                      </td>
+                      <td className="py-3 px-4 text-sm text-gray-600">
+                        {agenda.sortOrder}
                       </td>
                       <td className="py-3 px-4 text-sm text-gray-500">
                         {format(new Date(agenda.createdAt), 'yyyy-MM-dd hh:mm:ss a')}

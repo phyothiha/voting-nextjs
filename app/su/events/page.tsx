@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { DeleteEventButton } from "./DeleteEventButton";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { EventsFilterTabs } from "./EventsFilterTabs";
+import { EventsFilterTabs } from "@/app/su/events/EventsFilterTabs";
 
 async function deleteEvent(id: number) {
   "use server";

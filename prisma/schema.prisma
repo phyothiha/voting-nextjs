@@ -66,9 +66,9 @@ model GiftExchange {
   id           Int      @id @default(autoincrement())
   userId       Int      @unique
   user         User     @relation("GiftGiver", fields: [userId], references: [id], onDelete: Cascade)
-  targetUserId Int?
+  targetUserId Int?     @unique
   targetUser   User?    @relation("GiftReceiver", fields: [targetUserId], references: [id], onDelete: SetNull)
-  status       String   // "searching" or "completed"
+  status       String   // "waiting", "assigned", or "manually_assigned"
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

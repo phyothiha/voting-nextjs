@@ -610,7 +610,7 @@ export default function Home() {
                         Registering...
                       </span>
                     ) : (
-                      'Get Player Number'
+                      'Initiate the Game'
                     )}
                   </button>
                 </form>
